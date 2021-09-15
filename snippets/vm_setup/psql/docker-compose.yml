@@ -1,0 +1,16 @@
+version: '2.0'
+
+services:
+
+  # https://hub.docker.com/_/postgres
+  postgres:
+    restart: always
+    mem_limit: 128m
+    image: "postgres:10.15-alpine"
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "Agile1234567"
