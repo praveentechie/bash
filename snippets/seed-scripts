@@ -1,0 +1,42 @@
+#! /bin/bash
+
+baseDir='/media/praveen/workspace/scripts';
+scriptCount=0;
+if [[ ! -e $baseDir ]]; then
+	sudo mount /dev/sda3 /media/praveen/workspace/
+	echo "workspace mounted";
+fi
+
+linkScript() {
+	local scriptPath=$1;
+	local fileName=$2;
+	
+	if [[ ! -e "$HOME/bin/$fileName" ]]; then
+		ln -s $scriptPath $fileName;
+		mv "./$fileName" "$HOME/bin/"
+		echo "created symlink for $scriptPath with name $fileName";
+	else
+		echo "Symlink $fileName exists";
+	fi
+}
+
+### recursive function
+# get contents of a directory and push files to an array
+getEntries() {
+	for entry in "$1"/* ; do
+		if [[ -d $entry ]]; then
+			# ignore `snippets` directory
+			if [[ $entry != *"snippets"* ]]; then
+				getEntries $entry;
+			fi
+		else
+			### increment number
+			((scriptCount=scriptCount+1));
+			linkScript $entry $(echo "$entry" | awk -F/ '{print $NF}' | cut -d'.' -f1);
+		fi
+	done	
+}
+
+getEntries $baseDir;
+echo "Total scripts: $scriptCount";
+
